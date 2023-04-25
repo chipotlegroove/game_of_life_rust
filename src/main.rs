@@ -1,4 +1,7 @@
+#![windows_subsystem = "windows"]
 use ggez::{ContextBuilder, conf::WindowMode, GameResult, event::{self, EventHandler}, GameError, graphics::{self, Color, Mesh, Rect}, timer, mint::Point2};
+
+
 
 const CELL_SIZE: (f32, f32) = (20.0,20.0);
 const GRID_SIZE: (f32, f32) = (40.0,40.0);
