@@ -1,5 +1,4 @@
 use ggez::{ContextBuilder, conf::WindowMode, GameResult, event::{self, EventHandler}, GameError, graphics::{self, Color, Mesh, Rect}, timer, mint::Point2};
-
 const CELL_SIZE: (f32, f32) = (20.0,20.0);
 const GRID_SIZE: (f32, f32) = (40.0,40.0);
 const WINDOW_SIZE: (f32, f32) = (CELL_SIZE.0 * GRID_SIZE.0, CELL_SIZE.1 * GRID_SIZE.1);
@@ -8,6 +7,8 @@ struct State {
     grid:Vec<Vec<bool>>,
     fps:u32,
     running: bool,
+    dragging: bool,
+    cell: (usize,usize)
 }
 
 impl State {
@@ -16,6 +17,9 @@ impl State {
             grid: vec![vec![false; GRID_SIZE.1 as usize]; GRID_SIZE.0 as usize],
             fps: 1,
             running: false,
+            dragging: false,
+            cell: (50,50)
+
         }
     }
 }
@@ -110,6 +114,35 @@ impl EventHandler<GameError> for State {
             y: f32,
         ) {
         self.grid[(x/CELL_SIZE.0).floor() as usize][(y/CELL_SIZE.1).floor() as usize] ^= true;
+        self.dragging = true;
+    }
+
+    fn mouse_motion_event(&mut self,
+        _ctx: &mut ggez::Context,
+        x: f32,
+        y: f32,
+        _dx: f32,
+        _dy: f32) {
+            if self.dragging {
+                let cell_x = (x/CELL_SIZE.0).floor() as usize;
+                let cell_y= (y/CELL_SIZE.1).floor() as usize;
+                if self.cell.0 != cell_x || self.cell.1 != cell_y {
+                    self.cell.0 = cell_x;
+                    self.cell.1 = cell_y;
+                    self.grid[cell_x][cell_y] ^= true;   
+                }
+            }
+           
+    }
+
+    fn mouse_button_up_event(
+            &mut self,
+            _ctx: &mut ggez::Context,
+            _button: event::MouseButton,
+            _x: f32,
+            _y: f32,
+        ) {
+        self.dragging = false;
     }
 
     fn key_down_event(
